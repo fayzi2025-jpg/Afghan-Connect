@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#153d6f">
+  <meta name="description" content="AfghanConnect aide à trouver des services utiles en France.">
+  <link rel="manifest" href="./manifest.json">
+  <title>AfghanConnect — Services en France</title>
+  <style>
+    :root{--blue:#153d6f;--blue2:#245b96;--ink:#172b45;--muted:#66758a;--line:#dce4ee;--bg:#f5f8fc;--card:#fff}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;color:var(--ink)}
+    button,input,select{font:inherit}button{cursor:pointer}
+    .wrap{max-width:1050px;margin:auto;padding:16px}
+    header{background:linear-gradient(135deg,var(--blue),var(--blue2));color:white;border-radius:22px;padding:25px 22px;margin-top:12px}
+    .top{display:flex;justify-content:space-between;gap:14px;align-items:center;flex-wrap:wrap}
+    .brand{display:flex;gap:12px;align-items:center}.logo{width:48px;height:48px;border-radius:15px;background:#fff;color:var(--blue);display:grid;place-items:center;font-size:25px;font-weight:800}
+    h1{font-size:clamp(26px,5vw,38px);margin:0}.tag{margin:7px 0 0;color:#e4efff}
+    .language{border:1px solid #b7d1f2;background:#fff;color:var(--blue);padding:10px 12px;border-radius:10px}
+    .searchrow{display:grid;grid-template-columns:1fr auto;gap:10px;margin-top:22px}
+    .searchrow input{min-width:0;padding:14px 15px;border:0;border-radius:12px}
+    .searchrow button,.primary{background:#f5c451;color:#26364c;border:0;border-radius:12px;padding:13px 16px;font-weight:700}
+    .intro{padding:24px 2px 8px}.intro h2{margin:0 0 5px;font-size:24px}.intro p{margin:0;color:var(--muted)}
+    .categories{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:16px 0 24px}
+    .cat{background:white;border:1px solid var(--line);border-radius:15px;padding:14px 8px;color:var(--ink);text-align:center;min-height:94px}
+    .cat .emoji{display:block;font-size:25px;margin-bottom:7px}.cat.active{border:2px solid var(--blue);background:#edf5ff}
+    .resultshead{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:16px 0}
+    .resultshead h2{font-size:21px;margin:0}.count{color:var(--muted);font-size:14px}
+    .cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:17px}
+    .cardtop{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+    .card h3{margin:0 0 6px;font-size:18px}.pill{display:inline-block;background:#eaf2fc;color:var(--blue);font-size:12px;padding:5px 8px;border-radius:999px}
+    .city{color:var(--muted);font-size:14px;margin:9px 0}.desc{line-height:1.45;margin:10px 0 15px}
+    .actions{display:flex;gap:8px;flex-wrap:wrap}.actions a{display:inline-block;text-decoration:none;padding:9px 12px;border-radius:9px;border:1px solid var(--line);color:var(--blue);font-weight:650}.actions .call{background:var(--blue);color:#fff;border-color:var(--blue)}
+    .notice{background:#fff8e5;border:1px solid #f0d78f;color:#654d13;border-radius:12px;padding:12px 14px;margin:20px 0;font-size:13px;line-height:1.5}
+    footer{padding:22px 0 34px;color:var(--muted);font-size:13px}
+    .empty{background:white;border:1px dashed var(--line);padding:24px;text-align:center;border-radius:14px;color:var(--muted);grid-column:1/-1}
+    [dir=rtl] body,[dir=rtl] .card{text-align:right}[dir=rtl] .top,[dir=rtl] .brand{direction:rtl}
+    @media(max-width:650px){.categories{grid-template-columns:repeat(2,minmax(0,1fr))}.cards{grid-template-columns:1fr}.searchrow{grid-template-columns:1fr}.wrap{padding:12px}header{padding:20px 16px}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="top">
+      <div class="brand"><div class="logo" aria-hidden="true">A</div><div><h1 id="brand">AfghanConnect</h1><p class="tag" id="tagline">Votre accès aux services en France</p></div></div>
+      <select class="language" id="language" aria-label="Language">
+        <option value="fr">Français</option><option value="fa">دری</option><option value="ps">پښتو</option><option value="en">English</option>
+      </select>
+    </div>
+    <div class="searchrow">
+      <input id="search" type="search" placeholder="Rechercher un service, une ville..." aria-label="Search">
+      <button id="searchButton">Rechercher</button>
+    </div>
+  </header>
+  <section class="intro"><h2 id="browseTitle">Trouver un service</h2><p id="browseText">Des contacts utiles, réunis au même endroit.</p></section>
+  <nav class="categories" id="categories" aria-label="Service categories"></nav>
+  <div class="resultshead"><h2 id="resultsTitle">Services disponibles</h2><span class="count" id="count"></span></div>
+  <main class="cards" id="results" aria-live="polite"></main>
+  <div class="notice" id="notice">Important : les fiches affichées ci-dessous sont des exemples fictifs. Vérifiez les professionnels avant de les recommander. AfghanConnect n'est pas un service officiel ni un cabinet juridique.</div>
+  <footer id="footer">AfghanConnect · Projet communautaire indépendant · Contactez directement les professionnels pour confirmer leurs services.</footer>
+</div>
+<script>
+const translations = {
+ fr:{tagline:"Votre accès aux services en France",search:"Rechercher un service, une ville...",searchBtn:"Rechercher",browse:"Trouver un service",browseText:"Des contacts utiles, réunis au même endroit.",results:"Services disponibles",all:"Tous",law:"Avocats",translation:"Traducteurs",agency:"Agences",admin:"Aide administrative",housing:"Logement",jobs:"Emploi",call:"Appeler",website:"Site web",sample:"Exemple fictif",city:"Ville",none:"Aucun résultat. Essayez un autre mot ou une autre catégorie.",notice:"Important : les fiches affichées ci-dessous sont des exemples fictifs. Vérifiez les professionnels avant de les recommander. AfghanConnect n'est pas un service officiel ni un cabinet juridique.",footer:"AfghanConnect · Projet communautaire indépendant · Contactez directement les professionnels pour confirmer leurs services."},
+ en:{tagline:"Your connection to services in France",search:"Search a service or city...",searchBtn:"Search",browse:"Find a service",browseText:"Useful contacts, all in one place.",results:"Services",all:"All services",law:"Lawyers",translation:"Translators",agency:"Agencies",admin:"Administrative help",housing:"Housing",jobs:"Employment",call:"Call",website:"Website",sample:"Fictional example",city:"City",none:"No results. Try another word or category.",notice:"Important: the listings shown are fictional examples. Verify professionals before recommending them. AfghanConnect is not an official service or a law firm.",footer:"AfghanConnect · Independent community project · Contact professionals directly to confirm their services."},
+ fa:{tagline:"راه ارتباط شما با خدمات در فرانسه",search:"جستجوی خدمت یا شهر...",searchBtn:"جستجو",browse:"پیدا کردن خدمات",browseText:"تماس‌های مفید، همه در یک‌جا.",results:"خدمات",all:"همه خدمات",law:"وکیلان",translation:"مترجمان",agency:"آژانس‌ها",admin:"کمک اداری",housing:"مسکن",jobs:"کار",call:"تماس",website:"وب‌سایت",sample:"نمونهٔ خیالی",city:"شهر",none:"نتیجه‌ای پیدا نشد. واژه یا دستهٔ دیگری را امتحان کنید.",notice:"مهم: فهرست‌های زیر نمونه‌های خیالی هستند. پیش از معرفی، مشخصات متخصصان را بررسی کنید. افغان‌کانکت یک نهاد رسمی یا دفتر حقوقی نیست.",footer:"افغان‌کانکت · پروژهٔ مستقل اجتماعی · برای تأیید خدمات مستقیماً با متخصصان تماس بگیرید."},
+ ps:{tagline:"په فرانسه کې خدمتونو ته ستاسو لار",search:"خدمت یا ښار ولټوئ...",searchBtn:"لټون",browse:"خدمت پیدا کړئ",browseText:"ګټورې اړیکې، ټول په یوه ځای کې.",results:"شته خدمتونه",all:"ټول خدمتونه",law:"وکیلان",translation:"ژباړونکي",agency:"ادارې",admin:"اداري مرسته",housing:"کور",jobs:"کار",call:"زنګ ووهئ",website:"وېبپاڼه",sample:"خیالي بېلګه",city:"ښار",none:"پایله ونه موندل شوه. بله کلمه یا کټګوري وازمویئ.",notice:"مهم: لاندې لېستونه خیالي بېلګې دي. د معرفي کولو مخکې د متخصصانو معلومات تایید کړئ. افغان‌کونیکټ رسمي اداره یا حقوقي دفتر نه دی.",footer:"افغان‌کونیکټ · خپلواکه ټولنیزه پروژه · د خدمتونو د تایید لپاره له متخصصانو سره مستقیمه اړیکه ونیسئ."}
+};
+const categories = [
+ {id:"all",icon:"🔎"},{id:"law",icon:"⚖️"},{id:"translation",icon:"🌐"},{id:"agency",icon:"🏢"},{id:"admin",icon:"📄"},{id:"housing",icon:"🏠"},{id:"jobs",icon:"💼"}
+];
+const listings = [
+ {id:1,cat:"law",name:"Exemple de cabinet juridique",city:"Paris",desc:"Exemple de fiche. Remplacez par un professionnel vérifié.",phone:"",url:""},
+ {id:2,cat:"translation",name:"Exemple de traducteur",city:"Île-de-France",desc:"Exemple de fiche. Ajoutez les langues et les services confirmés.",phone:"",url:""},
+ {id:3,cat:"agency",name:"Exemple d’agence",city:"Paris",desc:"Exemple de fiche. Remplacez par une agence participante.",phone:"",url:""},
+ {id:4,cat:"admin",name:"Exemple d’aide administrative",city:"Paris",desc:"Exemple de fiche. Précisez les démarches proposées.",phone:"",url:""},
+ {id:5,cat:"housing",name:"Exemple de service logement",city:"Île-de-France",desc:"Exemple de fiche. Vérifiez les conditions et les coordonnées.",phone:"",url:""},
+ {id:6,cat:"jobs",name:"Exemple d’accompagnement emploi",city:"Paris",desc:"Exemple de fiche. Ajoutez uniquement des informations vérifiées.",phone:"",url:""}
+];
+let selected = "all";
+const $ = id => document.getElementById(id);
+function safeText(tag, cls, text){const el=document.createElement(tag);if(cls)el.className=cls;el.textContent=text;return el;}
+function setLanguage(lang){
+ const t=translations[lang]||translations.fr;document.documentElement.lang=lang;document.documentElement.dir=(lang==="fa"||lang==="ps")?"rtl":"ltr";
+ $("tagline").textContent=t.tagline;$("search").placeholder=t.search;$("search").setAttribute("aria-label",t.search);$("searchButton").textContent=t.searchBtn;
+ $("browseTitle").textContent=t.browse;$("browseText").textContent=t.browseText;$("resultsTitle").textContent=t.results;$("notice").textContent=t.notice;$("footer").textContent=t.footer;
+ renderCategories();renderResults();
+}
+function renderCategories(){
+ const t=translations[$("language").value]||translations.fr, nav=$("categories");nav.replaceChildren();
+ categories.forEach(c=>{const b=document.createElement("button");b.className="cat"+(selected===c.id?" active":"");b.type="button";b.setAttribute("aria-pressed",selected===c.id?"true":"false");b.append(safeText("span","emoji",c.icon),safeText("span","",t[c.id]));b.addEventListener("click",()=>{selected=c.id;renderCategories();renderResults()});nav.append(b)});
+}
+function renderResults(){
+ const t=translations[$("language").value]||translations.fr,q=$("search").value.trim().toLocaleLowerCase(),root=$("results");root.replaceChildren();
+ const filtered=listings.filter(x=>(selected==="all"||x.cat===selected)&&(x.name+" "+x.city+" "+x.desc+" "+x.cat).toLocaleLowerCase().includes(q));
+ $("count").textContent=filtered.length;
+ if(!filtered.length){root.append(safeText("div","empty",t.none));return}
+ filtered.forEach(x=>{
+  const card=safeText("article","card","");const top=safeText("div","cardtop","");const title=safeText("h3","",x.name);const pill=safeText("span","pill",t.sample);top.append(title,pill);
+  card.append(top,safeText("p","city","📍 "+x.city),safeText("p","desc",x.desc));
+  const actions=safeText("div","actions","");
+  if(x.phone){const a=safeText("a","call",t.call);a.href="tel:"+x.phone;actions.append(a)}
+  if(x.url){const a=safeText("a","",t.website);a.href=x.url;a.target="_blank";a.rel="noopener noreferrer";actions.append(a)}
+  if(!x.phone&&!x.url){const note=safeText("span","count",t.sample);actions.append(note)}
+  card.append(actions);root.append(card);
+ });
+}
+$("language").addEventListener("change",e=>setLanguage(e.target.value));
+$("search").addEventListener("input",renderResults);$("searchButton").addEventListener("click",renderResults);
+setLanguage("fr");
+if("serviceWorker" in navigator && location.protocol.startsWith("http")){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}))}
+</script>
+</body>
+</html>
