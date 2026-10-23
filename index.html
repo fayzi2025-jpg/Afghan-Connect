@@ -1,4 +1,6 @@
-
+<title>AfghanConnect - Services in France</title>
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#123b2a">
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,7 +11,14 @@
 
 <style>
 * { box-sizing: border-box; }
-
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js")
+      .catch(error => console.error("App setup error:", error));
+  });
+}
+</script>
 body {
   margin: 0;
   font-family: Arial, sans-serif;
